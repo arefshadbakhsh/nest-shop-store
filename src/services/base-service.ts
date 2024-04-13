@@ -1,12 +1,13 @@
-import { Repository } from 'typeorm';
 import { BaseEntity } from '../entity/base-entity';
 import { Page } from '../model/page';
 import { PaginationParams } from '../model/pagination';
+import { BaseRepository } from '../repository/base-repository';
+import { FindOptionsWhere } from 'typeorm';
 
 export abstract class BaseService<T extends BaseEntity> {
-  protected constructor(protected readonly repository: Repository<T>) {}
+  protected constructor(protected readonly repository: BaseRepository<T>) {}
 
-  async paginate<T>(
+  async pagination<T>(
     items: T[],
     paginationParams: PaginationParams,
     totalElements: number,
@@ -30,7 +31,7 @@ export abstract class BaseService<T extends BaseEntity> {
     };
   }
 
-  async findAll(paginationParams: PaginationParams) {
+  async paginate(paginationParams: PaginationParams, relations: string[]) {
     const pagination = new PaginationParams(
       paginationParams.page,
       paginationParams.size,
@@ -39,8 +40,13 @@ export abstract class BaseService<T extends BaseEntity> {
     const [items, totalElements] = await this.repository.findAndCount({
       skip: pagination.page * pagination.size,
       take: pagination.size,
+      relations,
     });
 
-    return this.paginate<T>(items, pagination, totalElements);
+    return this.pagination<T>(items, pagination, totalElements);
+  }
+
+  async findById(id: number): Promise<T> {
+    return this.repository.findOneBy({ id } as FindOptionsWhere<T>);
   }
 }

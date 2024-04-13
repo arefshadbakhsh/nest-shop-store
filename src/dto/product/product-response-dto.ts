@@ -1,4 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Category } from '../../entity/category';
+import { CategoryRepository } from '../../repository/category-repository';
+import { CategoryResponseDto } from '../category/category-response-dto';
 
 export class ProductResponseDto {
   @ApiProperty({
@@ -23,4 +26,11 @@ export class ProductResponseDto {
     description: 'The name of the product',
   })
   price: number;
+
+  @ApiProperty({
+    name: 'categoryId',
+    description: 'Product category',
+    required: false,
+  })
+  category?: CategoryResponseDto;
 }

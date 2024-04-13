@@ -5,7 +5,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthGuard } from '../guard/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { UserModule } from './user.module';
-import { HashService } from "../shared/hash.service";
+import { HashService } from '../shared/hash.service';
+import * as process from 'node:process';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { HashService } from "../shared/hash.service";
         global: true,
         secret: process.env.JWT_SECRET,
         signOptions: {
-          expiresIn: Number(process.env.JWT_EXPIRES_TIME),
+          expiresIn: Number(process.env.JWT_EXPIRE_TIME),
         },
       }),
     }),

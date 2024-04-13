@@ -5,8 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { ProductModule } from './modules/product.module';
 import { CategoryModule } from './modules/category.module';
 import { AuthModule } from './modules/auth.module';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { TransactionalInterceptor } from './shared/transactransactional.interceptor';
+import { addTransactionalDataSource } from 'typeorm-transactional';
+import { DataSource } from 'typeorm';
 
 @Module({
   imports: [
@@ -23,17 +23,18 @@ import { TransactionalInterceptor } from './shared/transactransactional.intercep
         autoLoadEntities: true, // models will be loaded automatically
         synchronize: true, // your entities will be synced with the database(recommended in development)
       }),
+      async dataSourceFactory(options): Promise<DataSource> {
+        if (!options) {
+          throw new Error('Invalid options passed');
+        }
+
+        return addTransactionalDataSource(new DataSource(options));
+      },
     }),
     ProductModule,
     CategoryModule,
     AuthModule,
   ],
-  providers: [
-    AppService,
-    // {
-    //   provide: APP_INTERCEPTOR,
-    //   useClass: TransactionalInterceptor,
-    // },
-  ],
+  providers: [AppService],
 })
 export class AppModule {}

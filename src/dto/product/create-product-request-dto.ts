@@ -14,4 +14,11 @@ export class CreateProductRequestDto {
     required: true,
   })
   price: number;
+
+  @ApiProperty({
+    name: 'categoryId',
+    description: 'Product category',
+    required: false,
+  })
+  categoryId?: number;
 }

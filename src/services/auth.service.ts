@@ -6,7 +6,7 @@ import { User } from '../entity/user';
 import { UserService } from './user.service';
 import { HashService } from '../shared/hash.service';
 import { AuthResponseDto } from '../dto/user/auth-response-dto';
-import { Transactional } from "../shared/transactional";
+import { Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +19,10 @@ export class AuthService {
   async login(body: LoginRequestDto): Promise<AuthResponseDto> {
     const user = await this.userService.findUserByEmail(body.email);
     if (!user) {
-      throw new Error('User not found');
+      throw new HttpException(
+        { message: 'User not found', key: 'USER_NOT_FOUND' },
+        400,
+      );
     }
 
     const passwordMatch = await this.hashService.isMatch(
@@ -27,7 +30,10 @@ export class AuthService {
       user.password,
     );
     if (!passwordMatch) {
-      throw new Error('Password not match');
+      throw new HttpException(
+        { message: 'Mismatch user data', key: 'MISMATCH_USER_DATA' },
+        400,
+      );
     }
     return this.signToken(user);
   }
@@ -47,6 +53,7 @@ export class AuthService {
       ...body,
       password: hashedPassword,
     });
+
     return this.signToken(user);
   }
 
