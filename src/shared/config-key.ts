@@ -1,0 +1,4 @@
+export enum Keys {
+  JWT_SECRET = 'JWT_SECRET',
+  JWT_EXPIRE_TIME = 'JWT_EXPIRE_TIME',
+}
